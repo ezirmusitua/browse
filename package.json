@@ -1,0 +1,23 @@
+{
+  "name": "web_gallery",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "ezirmusitua <jferroal@gmail.com>",
+  "bin": "lib/index.js",
+  "license": "MIT",
+  "dependencies": {},
+  "scripts": {
+    "build": "pkg . && mv build/web_gallery build/viewer"
+  },
+  "pkg": {
+    "compress": "GZip",
+    "outputPath": "build",
+    "assets": [],
+    "targets": [
+      "node14-macos-arm64"
+    ]
+  },
+  "devDependencies": {
+    "pkg": "^5.5.2"
+  }
+}
