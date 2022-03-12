@@ -1,5 +1,5 @@
 {
-  "name": "web_gallery",
+  "name": "browse",
   "version": "0.1.0",
   "main": "index.js",
   "author": "ezirmusitua <jferroal@gmail.com>",
@@ -7,7 +7,7 @@
   "license": "MIT",
   "dependencies": {},
   "scripts": {
-    "build": "pkg . && mv build/web_gallery build/viewer"
+    "build": "pkg ."
   },
   "pkg": {
     "compress": "GZip",
