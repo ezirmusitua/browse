@@ -16,19 +16,24 @@ async function build_file_item(
   root: string,
   sequence: [string, string]
 ) {
-  const stat = await fs.stat(filepath);
-  const name = path.basename(filepath);
-  const dir = path.dirname(filepath).replace(root, "");
-  return {
-    id,
-    name,
-    dir,
-    root,
-    type: (stat.isDirectory() ? "directory" : "file") as any,
-    mime: mime.lookup(filepath) || "",
-    sequence,
-    children: [],
-  } as iFileItem;
+  try {
+    const stat = await fs.stat(filepath);
+    const name = path.basename(filepath);
+    const dir = path.dirname(filepath).replace(root, "");
+    return {
+      id,
+      name,
+      dir,
+      root,
+      type: (stat.isDirectory() ? "directory" : "file") as any,
+      mime: mime.lookup(filepath) || "",
+      sequence,
+      children: [],
+    } as iFileItem;
+  } catch (e) {
+    console.log("[ERROR] build file item failed ", e);
+    return null;
+  }
 }
 
 async function build_directory_state(
@@ -42,6 +47,7 @@ async function build_directory_state(
     Math.max(state.id - 1, ID_START) + "",
     state.id + 1 + "",
   ]);
+  if (!item) return { state, item };
   state.id += 1;
   if (item.type == "directory") {
     let inside_directory = await fs.readdir(dir);

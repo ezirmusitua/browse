@@ -62,7 +62,6 @@ export default async function handler(
 ) {
   if (req.method != "GET") return res.status(404).end("Method Not Allowed");
   const { dir, id } = req.query;
-  console.log("[DEBUG] ", dir, id);
   const target = await get_file_item(dir + "", id + "");
   const filepath = path.join(target.root, target.dir, target.name);
   if (!target) return res.status(404).end("Not Found");

@@ -1,4 +1,5 @@
 import Playlist from "../../../components/app/playlist";
+import Actions from "../../../components/app/playlist/components/Actions";
 
 interface iProps {
   params: { dir: string };
@@ -14,7 +15,12 @@ async function get_file_data(dir: string, id?: string) {
 
 async function PlaylistPage({ params: { dir }, searchParams: { id } }: iProps) {
   const current = await get_file_data(dir, id || "");
-  return <Playlist current={current}></Playlist>;
+  return (
+    <>
+      <Playlist current={current}></Playlist>
+      <Actions></Actions>
+    </>
+  );
 }
 
 export default PlaylistPage;
