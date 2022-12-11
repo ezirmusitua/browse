@@ -3,22 +3,12 @@
   "version": "0.1.0",
   "main": "index.js",
   "author": "ezirmusitua <jferroal@gmail.com>",
-  "bin": "lib/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "pkg .",
+    "pkg": "lerna run pkg",
     "dev": "lerna run dev --parallel"
   },
-  "pkg": {
-    "compress": "GZip",
-    "outputPath": "build",
-    "assets": [],
-    "targets": [
-      "node14-macos-arm64"
-    ]
-  },
   "devDependencies": {
-    "lerna": "^5.1.7",
-    "pkg": "^5.5.2"
+    "lerna": "^5.1.7"
   }
 }

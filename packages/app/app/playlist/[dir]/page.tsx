@@ -7,7 +7,7 @@ interface iProps {
 }
 
 async function get_file_data(dir: string, id?: string) {
-  let url = `http://localhost:8080/api/file_info?dir=${dir}`;
+  let url = `http://127.0.0.1:8080/api/file_info?dir=${dir}`;
   url += id ? `&id=${id}` : "";
   const resp = await fetch(url);
   return resp.json();

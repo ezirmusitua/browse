@@ -1,7 +1,7 @@
 import Sider from "../../../components/Layout/Sider";
 
 async function load_root(dir: string) {
-  const resp = await fetch(`http://localhost:8080/api/file_info?dir=${dir}`);
+  const resp = await fetch(`http://127.0.0.1:8080/api/file_info?dir=${dir}`);
   return resp.json();
 }
 
