@@ -14,7 +14,7 @@ function ImageViewer({ src, mime }: iProps) {
   if (!mime.startsWith("image")) return null;
   return (
     <div className="relative w-full h-full">
-      <img
+      <NextImage
         className="object-contain"
         src={src}
         onLoadingComplete={hide_loading}
@@ -22,7 +22,7 @@ function ImageViewer({ src, mime }: iProps) {
         fill
         unoptimized
         quality={50}
-      ></img>
+      ></NextImage>
       <Loading></Loading>
     </div>
   );

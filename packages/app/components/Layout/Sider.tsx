@@ -1,6 +1,6 @@
 import { iFileItem } from "../../interface";
 import FileItem from "./FileItem";
-import DirectoryItem from "./NavItem";
+import DirectoryItem from "./DirectoryItem";
 import Title from "./Title";
 
 interface iProps {
@@ -19,7 +19,6 @@ function Sider({ dir, title, items }: iProps) {
       <ul className="text-[12px] pl-1 pt-[48px]">
         {items.map((item, key) =>
           item.type == "directory" ? (
-            // @ts-expect-error Server Component
             <DirectoryItem
               dir={decodeURIComponent(dir)}
               key={key}

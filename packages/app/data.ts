@@ -87,6 +87,7 @@ export async function build_indexes_iteratively(
   let candidates: Array<string[]> = [[parent, dir]];
   async function process_depth(candidate: string[]) {
     const item = await FileItem.create(candidate[0], candidate[1]);
+    if (!item) return { item: null, new_candidates: [] };
     if (item.type == eFileType.DIRECTORY) {
       const files = await list_files(item); // ignore hidden files
       item.children = await Promise.all(
@@ -101,8 +102,7 @@ export async function build_indexes_iteratively(
     return { item, new_candidates: [] };
   }
   let item: FileItem;
-  for await (const depth of Array.from({ length: max }).map((_, i) => i)) {
-    console.log("[INFO] BFS depth ", depth);
+  for await (const _ of Array.from({ length: max }).map((_, i) => i)) {
     let next_depth_candidate = [];
     for await (const candidate of candidates) {
       const result = await process_depth(candidate);
@@ -117,9 +117,14 @@ export async function build_indexes_iteratively(
 
 async function get_directory_item(filepath: string) {
   const index_path = get_index_path(filepath);
-  if (existsSync(index_path)) {
-    const parent_data = await fs.readFile(index_path);
-    return JSON.parse(parent_data.toString()) as iFileItem;
+
+  try {
+    if (existsSync(index_path)) {
+      const parent_data = await fs.readFile(index_path);
+      return JSON.parse(parent_data.toString()) as iFileItem;
+    }
+  } catch (e) {
+    console.log("[ERROR] read index failed ", e.message);
   }
   return build_indexes_iteratively(
     path.dirname(filepath),
