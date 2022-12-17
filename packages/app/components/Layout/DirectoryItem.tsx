@@ -1,11 +1,11 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import * as path from "path";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { iFileItem } from "../../interface";
+import { eFileType, iFileItem } from "../../interface";
 import FileItem from "./FileItem";
 
 async function load_directory(path: string) {
-  console.log("[INFO] loading directory ", path);
   try {
     const resp = await fetch(
       `http://localhost:8080/api/file_info?path=${encodeURIComponent(path)}`
@@ -20,13 +20,18 @@ async function load_directory(path: string) {
 interface iProps {
   dir: string;
   item: iFileItem;
-  onActive?: {
-    (_: boolean): void;
-  };
+  depth: number;
 }
 
-function DirectoryItem({ dir, item, onActive }: iProps) {
-  const [active, set_active] = useState(false);
+function DirectoryItem({ dir, item, depth }: iProps) {
+  const params = useSearchParams();
+  const active = useMemo(() => {
+    const path = decodeURIComponent(params.get("path") + "");
+    const dir_relative = path.replace(dir, "");
+    const ancestors = dir_relative.split("/").slice(1, -1);
+    return ancestors.includes(item.name);
+  }, [params, item.name, dir]);
+
   const [collapsed, set_collapsed] = useState(true);
   const [children, set_children] = useState([]);
   const [loading, set_loading] = useState(false);
@@ -44,23 +49,18 @@ function DirectoryItem({ dir, item, onActive }: iProps) {
     set_children(ret.children);
   }, [collapsed, loading, children, item.parent, item.name]);
 
-  const onChildActive = useCallback(
-    (active: boolean) => {
-      if (onActive) {
-        onActive(active);
-      }
-      set_active(active);
-      if (collapsed && active) {
-        set_collapsed(false);
-      }
-    },
-    [onActive, collapsed]
-  );
+  useEffect(() => {
+    if (active && collapsed) {
+      set_collapsed(false);
+    }
+  }, [active, collapsed]);
 
   const className = useMemo(() => {
     let name = "px-2 py-2 mb-0 line-clamp-1 font-bold";
     return name + (active ? " bg-blue-900 font-semibold" : "");
   }, [active]);
+
+  const next_depth = useMemo(() => depth + 1, [depth]);
 
   useEffect(() => {
     load();
@@ -80,14 +80,10 @@ function DirectoryItem({ dir, item, onActive }: iProps) {
                   <DirectoryItem
                     dir={dir}
                     item={child}
-                    onActive={onActive}
+                    depth={next_depth}
                   ></DirectoryItem>
                 ) : (
-                  <FileItem
-                    dir={dir}
-                    item={child as iFileItem}
-                    onActive={onChildActive}
-                  ></FileItem>
+                  <FileItem dir={dir} item={child as iFileItem}></FileItem>
                 )}
               </div>
             ))}

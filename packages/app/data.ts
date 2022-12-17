@@ -132,29 +132,55 @@ async function get_directory_item(filepath: string) {
   );
 }
 
+async function build_sequence(parent: iFileItem, file: iFileItem) {
+  const index = parent.children.findIndex((i) => i.name == file.name);
+  const is_first = index == 0;
+  const is_last = index === parent.children.length - 1;
+  const get_full = (file: iFileItem) => path.join(file.parent, file.name);
+  if (!is_first && !is_last) {
+    return [
+      get_full(parent.children[index - 1]),
+      get_full(parent.children[index + 1]),
+    ];
+  }
+
+  const ancestor = await get_item(parent.parent);
+  const parent_index = ancestor.children.findIndex(
+    (i: iFileItem) => i.name == parent.name
+  );
+  const get_siblings = async (offset: number) => {
+    let uncle = ancestor.children[parent_index + offset];
+    if (!uncle) return ancestor.children[parent_index].children;
+    const { children } = await get_item(path.join(uncle.parent, uncle.name));
+    return children;
+  };
+  if (is_first) {
+    const result = [get_full(file), get_full(parent.children[index + 1])];
+    const siblings = await get_siblings(-1);
+    if (siblings.length > 0) {
+      result[0] = get_full(siblings[siblings.length - 1]);
+    }
+    return result;
+  }
+  const result = [get_full(parent.children[index - 1]), get_full(file)];
+  const siblings = await get_siblings(1);
+  if (siblings.length > 0) {
+    result[1] = get_full(siblings[0]);
+  }
+  return result;
+}
+
 async function get_item(filepath: string) {
   try {
     const stat = await fs.stat(filepath);
     if (stat.isDirectory()) return get_directory_item(filepath);
     const dir = path.dirname(filepath);
     const parent_item = await get_directory_item(dir);
-    const file_index = parent_item.children.findIndex(
+    const file_item = parent_item.children.find(
       (i) => i.name == path.basename(filepath)
     );
-    const file_item = parent_item.children[file_index];
-    return {
-      ...file_item,
-      sequence: [
-        path.join(
-          dir,
-          parent_item.children[file_index - 1]?.name || file_item.name
-        ),
-        path.join(
-          dir,
-          parent_item.children[file_index + 1]?.name || file_item.name
-        ),
-      ] as [string, string],
-    };
+    const sequence = await build_sequence(parent_item, file_item);
+    return { ...file_item, sequence };
   } catch (e) {
     console.log("[ERROR] get item failed ", e);
     return {

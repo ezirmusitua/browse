@@ -23,6 +23,7 @@ function Sider({ dir, title, items }: iProps) {
               dir={decodeURIComponent(dir)}
               key={key}
               item={item}
+              depth={1}
             ></DirectoryItem>
           ) : (
             <FileItem dir={dir} key={key} item={item}></FileItem>

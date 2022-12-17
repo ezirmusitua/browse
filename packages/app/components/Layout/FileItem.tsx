@@ -1,27 +1,20 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { iFileItem } from "../../interface";
 
 interface iProps {
   dir: string;
   item: iFileItem;
-  onActive: {
-    (_: boolean): void;
-  };
 }
 
-export function FileItem({ dir, item, onActive }: iProps) {
+export function FileItem({ dir, item }: iProps) {
   const params = useSearchParams();
   const active = useMemo(
     () => item.name == decodeURIComponent(params.get("path")).split("/").pop(),
     [params, item.name]
   );
-
-  useEffect(() => {
-    onActive(active);
-  }, [active, onActive]);
 
   const href = useMemo(
     () =>
