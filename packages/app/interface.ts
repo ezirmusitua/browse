@@ -4,7 +4,6 @@ export enum eFileType {
 }
 
 export interface iFileItem {
-  id: string;
   name: string;
   parent: string;
   type: eFileType;

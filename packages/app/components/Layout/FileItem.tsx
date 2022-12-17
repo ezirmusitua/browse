@@ -1,20 +1,28 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { iFileItem } from "../../interface";
 
 interface iProps {
   dir: string;
   item: iFileItem;
+  onActive: {
+    (_: boolean): void;
+  };
 }
 
-export function FileItem({ dir, item }: iProps) {
+export function FileItem({ dir, item, onActive }: iProps) {
   const params = useSearchParams();
   const active = useMemo(
     () => item.name == decodeURIComponent(params.get("path")).split("/").pop(),
     [params, item.name]
   );
+
+  useEffect(() => {
+    onActive(active);
+  }, [active, onActive]);
+
   const href = useMemo(
     () =>
       `/playlist/${encodeURIComponent(dir)}?path=${encodeURIComponent(
@@ -26,7 +34,7 @@ export function FileItem({ dir, item }: iProps) {
   const className = useMemo(() => {
     let name =
       "text-[12px] cursor-pointer pl-2 text-white leading-[24px] line-clamp-1";
-    return name + (active ? " bg-blue-900" : "");
+    return name + (active ? " bg-blue-800" : "");
   }, [active]);
 
   const scroll_into_view = useCallback(

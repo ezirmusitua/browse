@@ -1,6 +1,6 @@
 "use client";
 import * as path from "path";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { iFileItem } from "../../interface";
 import FileItem from "./FileItem";
 
@@ -20,9 +20,13 @@ async function load_directory(path: string) {
 interface iProps {
   dir: string;
   item: iFileItem;
+  onActive?: {
+    (_: boolean): void;
+  };
 }
 
-function DirectoryItem({ dir, item }: iProps) {
+function DirectoryItem({ dir, item, onActive }: iProps) {
+  const [active, set_active] = useState(false);
   const [collapsed, set_collapsed] = useState(true);
   const [children, set_children] = useState([]);
   const [loading, set_loading] = useState(false);
@@ -33,15 +37,30 @@ function DirectoryItem({ dir, item }: iProps) {
   );
 
   const load = useCallback(async () => {
-    if (collapsed) return;
-    if (loading) return;
-    if (children.length != 0) return;
+    if (loading || collapsed || children.length != 0) return;
     set_loading(true);
     const ret = await load_directory(path.join(item.parent, item.name));
     set_loading(false);
     set_children(ret.children);
-    console.log("[DEBUG] load ", ret);
   }, [collapsed, loading, children, item.parent, item.name]);
+
+  const onChildActive = useCallback(
+    (active: boolean) => {
+      if (onActive) {
+        onActive(active);
+      }
+      set_active(active);
+      if (collapsed && active) {
+        set_collapsed(false);
+      }
+    },
+    [onActive, collapsed]
+  );
+
+  const className = useMemo(() => {
+    let name = "px-2 py-2 mb-0 line-clamp-1 font-bold";
+    return name + (active ? " bg-blue-900 font-semibold" : "");
+  }, [active]);
 
   useEffect(() => {
     load();
@@ -49,21 +68,26 @@ function DirectoryItem({ dir, item }: iProps) {
 
   return (
     <li className="cursor-pointer text-[12px] text-white">
-      <ul className="px-2">
-        <p
-          className="py-2 mb-0 line-clamp-1 font-bold"
-          onClick={toggle_collapsed}
-        >
+      <ul className="">
+        <p className={className} onClick={toggle_collapsed}>
           {item.name}
         </p>
         {!collapsed && (
-          <div className="border border-gray-200">
+          <div className="px-2 border border-gray-200">
             {children.map((child: iFileItem, index: number) => (
               <div key={index}>
                 {child.type == "directory" ? (
-                  <DirectoryItem dir={dir} item={child}></DirectoryItem>
+                  <DirectoryItem
+                    dir={dir}
+                    item={child}
+                    onActive={onActive}
+                  ></DirectoryItem>
                 ) : (
-                  <FileItem dir={dir} item={child as iFileItem}></FileItem>
+                  <FileItem
+                    dir={dir}
+                    item={child as iFileItem}
+                    onActive={onChildActive}
+                  ></FileItem>
                 )}
               </div>
             ))}

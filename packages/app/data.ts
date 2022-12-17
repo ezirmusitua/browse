@@ -153,7 +153,7 @@ async function get_item(filepath: string) {
           dir,
           parent_item.children[file_index + 1]?.name || file_item.name
         ),
-      ],
+      ] as [string, string],
     };
   } catch (e) {
     console.log("[ERROR] get item failed ", e);
@@ -162,6 +162,7 @@ async function get_item(filepath: string) {
       parent: path.dirname(filepath),
       type: eFileType.DIRECTORY,
       children: [],
+      sequence: ["", ""] as [string, string],
       mime: "",
     };
   }
