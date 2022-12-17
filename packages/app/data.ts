@@ -1,99 +1,165 @@
-import * as path from "path";
 import * as fs from "fs/promises";
+import * as path from "path";
 import * as mime from "mime-types";
-import { iFileItem } from "./interface";
+import { existsSync } from "fs";
+import { eFileType, iFileItem } from "./interface";
 
-const ID_START = 0;
+export class IdAllocator {
+  static instance: IdAllocator = null as any;
 
-interface iDirState {
-  id: number;
-  map: Record<string, iFileItem>;
+  private _current = 0;
+
+  constructor() {
+    if (IdAllocator.instance) return IdAllocator.instance;
+    IdAllocator.instance = this;
+    return this;
+  }
+
+  get() {
+    this._current += 1;
+    return this._current + "";
+  }
 }
 
-async function build_file_item(
-  id: string,
-  filepath: string,
-  root: string,
-  sequence: [string, string]
+export class FileItem implements iFileItem {
+  id: string;
+  name: string;
+  parent: string;
+  type: eFileType;
+  mime: string;
+  sequence: [string, string] = ["", ""];
+  children: iFileItem[] = [];
+
+  get path() {
+    return path.join(this.parent, this.name);
+  }
+
+  static async create(parent: string, filename: string) {
+    const filepath = path.join(parent, filename);
+    try {
+      const file_item = new FileItem();
+      const stat = await fs.stat(filepath);
+      file_item.id = new IdAllocator().get();
+      file_item.name = path.basename(filepath);
+      file_item.parent = parent;
+      file_item.type = stat.isDirectory()
+        ? eFileType.DIRECTORY
+        : eFileType.FILE;
+      file_item.mime = mime.lookup(filepath) || "";
+      return file_item;
+    } catch (e) {
+      console.log("[ERROR] build file item failed ", e);
+      return null;
+    }
+  }
+}
+
+function get_index_path(dir: string) {
+  return path.join(dir, `.browse.json`);
+}
+
+async function save_index(item: FileItem) {
+  return fs.writeFile(
+    get_index_path(item.path),
+    JSON.stringify(
+      {
+        ...item,
+        children: item.children.map((child) => ({ ...child, children: [] })),
+      },
+      null,
+      2
+    )
+  );
+}
+
+async function list_files(item: FileItem) {
+  let inside_directory = await fs.readdir(item.path);
+  return inside_directory
+    .sort((p, n) => p.localeCompare(n))
+    .filter((n) => !n.startsWith("."));
+}
+
+export async function build_indexes_iteratively(
+  parent: string,
+  dir: string,
+  max = 99
 ) {
+  let candidates: Array<string[]> = [[parent, dir]];
+  async function process_depth(candidate: string[]) {
+    const item = await FileItem.create(candidate[0], candidate[1]);
+    if (item.type == eFileType.DIRECTORY) {
+      const files = await list_files(item); // ignore hidden files
+      item.children = await Promise.all(
+        files.map((file) => FileItem.create(item.path, file))
+      );
+      await save_index(item);
+      const new_candidates = item.children
+        .filter((i) => i.type == eFileType.DIRECTORY)
+        .map((i) => [i.parent, i.name]);
+      return { item, new_candidates };
+    }
+    return { item, new_candidates: [] };
+  }
+  let item: FileItem;
+  for await (const depth of Array.from({ length: max }).map((_, i) => i)) {
+    console.log("[INFO] BFS depth ", depth);
+    let next_depth_candidate = [];
+    for await (const candidate of candidates) {
+      const result = await process_depth(candidate);
+      next_depth_candidate = next_depth_candidate.concat(result.new_candidates);
+      item = result.item;
+    }
+    if (next_depth_candidate.length == 0) break;
+    candidates = next_depth_candidate;
+  }
+  return item;
+}
+
+async function get_directory_item(filepath: string) {
+  const index_path = get_index_path(filepath);
+  if (existsSync(index_path)) {
+    const parent_data = await fs.readFile(index_path);
+    return JSON.parse(parent_data.toString()) as iFileItem;
+  }
+  return build_indexes_iteratively(
+    path.dirname(filepath),
+    path.basename(filepath)
+  );
+}
+
+async function get_item(filepath: string) {
   try {
     const stat = await fs.stat(filepath);
-    const name = path.basename(filepath);
-    const dir = path.dirname(filepath).replace(root, "");
+    if (stat.isDirectory()) return get_directory_item(filepath);
+    const dir = path.dirname(filepath);
+    const parent_item = await get_directory_item(dir);
+    const file_index = parent_item.children.findIndex(
+      (i) => i.name == path.basename(filepath)
+    );
+    const file_item = parent_item.children[file_index];
     return {
-      id,
-      name,
-      dir,
-      root,
-      type: (stat.isDirectory() ? "directory" : "file") as any,
-      mime: mime.lookup(filepath) || "",
-      sequence,
+      ...file_item,
+      sequence: [
+        path.join(
+          dir,
+          parent_item.children[file_index - 1]?.name || file_item.name
+        ),
+        path.join(
+          dir,
+          parent_item.children[file_index + 1]?.name || file_item.name
+        ),
+      ],
+    };
+  } catch (e) {
+    console.log("[ERROR] get item failed ", e);
+    return {
+      name: path.basename(filepath),
+      parent: path.dirname(filepath),
+      type: eFileType.DIRECTORY,
       children: [],
-    } as iFileItem;
-  } catch (e) {
-    console.log("[ERROR] build file item failed ", e);
-    return null;
+      mime: "",
+    };
   }
 }
 
-async function build_directory_state(
-  dir: string,
-  root: string,
-  state: iDirState
-) {
-  const name = path.basename(dir);
-  if (name.startsWith(".")) return { state, item: null };
-  const item = await build_file_item(state.id + "", dir, root, [
-    Math.max(state.id - 1, ID_START) + "",
-    state.id + 1 + "",
-  ]);
-  if (!item) return { state, item };
-  state.id += 1;
-  if (item.type == "directory") {
-    let inside_directory = await fs.readdir(dir);
-    inside_directory = inside_directory
-      .sort((p, n) => p.localeCompare(n))
-      .map((name) => path.join(dir, name));
-    const children: iFileItem[] = [];
-    for await (const filepath of inside_directory) {
-      const { item: child } = await build_directory_state(
-        filepath,
-        root,
-        state
-      );
-      if (child) {
-        children.push(child);
-      }
-    }
-    item.children = children;
-  }
-  state.map[item.id] = { ...item };
-  return { state, item };
-}
-
-export async function initialize_state(dir: string) {
-  const cache_path = path.join(dir, ".browse");
-  try {
-    const cached = await fs.readFile(cache_path);
-    const state = JSON.parse(cached.toString()) as iDirState;
-    return { state };
-  } catch (e) {
-    const { state, item } = await build_directory_state(dir, dir, {
-      id: ID_START,
-      map: {} as Record<string, iFileItem>,
-    });
-    await fs.writeFile(cache_path, JSON.stringify(state));
-    return { state, item };
-  }
-}
-
-export async function get_state(dir: string) {
-  const { state } = await initialize_state(dir);
-  return state;
-}
-
-export default async function get_file_item(dir: string, id?: string) {
-  const { state } = await initialize_state(dir);
-  id = id || ID_START + "";
-  return state.map[id];
-}
+export default get_item;

@@ -3,7 +3,7 @@ import { createReadStream } from "fs";
 import * as fs from "fs/promises";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as mime from "mime-types";
-import get_file_item from "../../data";
+import get_item from "../../data";
 
 const CHUNK_SIZE = 10 ** 6; // 1MB
 
@@ -61,11 +61,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method != "GET") return res.status(404).end("Method Not Allowed");
-  const { dir, id } = req.query;
-  const target = await get_file_item(dir + "", id + "");
-  const filepath = path.join(target.root, target.dir, target.name);
+  let { path } = req.query;
+  path = decodeURIComponent(path + "");
+  console.time(path);
+  const target = await get_item(path);
+  console.timeEnd(path);
   if (!target) return res.status(404).end("Not Found");
-  if (target.mime.startsWith("image")) return pipe_stream(filepath, {}, res);
-  if (target.mime.startsWith("video")) return pipe_video(filepath, req, res);
+  if (target.mime.startsWith("image")) return pipe_stream(path, {}, res);
+  if (target.mime.startsWith("video")) return pipe_video(path, req, res);
   return res.status(200).end(target.name);
 }

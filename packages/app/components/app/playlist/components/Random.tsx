@@ -14,8 +14,8 @@ function Random() {
   const pathname = usePathname();
   const dir = useMemo(() => (pathname || "").split("/").pop(), [pathname]);
   const onClick = useCallback(async () => {
-    const { id } = await get_random(dir);
-    router.push(`/playlist/${dir}?id=${id}`);
+    const { path } = await get_random(dir);
+    router.push(`/playlist/${dir}?path=${path}`);
   }, [dir, router]);
   return (
     <div

@@ -1,8 +1,15 @@
 import { iFileItem } from "../../interface";
-import { DirectorItem, FileItem } from "./NavItem";
+import FileItem from "./FileItem";
+import DirectoryItem from "./NavItem";
 import Title from "./Title";
 
-function Sider({ title, items }: { title: string; items: Array<iFileItem> }) {
+interface iProps {
+  dir: string;
+  title: string;
+  items: Array<iFileItem>;
+}
+
+function Sider({ dir, title, items }: iProps) {
   return (
     <nav
       id="sider"
@@ -12,9 +19,14 @@ function Sider({ title, items }: { title: string; items: Array<iFileItem> }) {
       <ul className="text-[12px] pl-1 pt-[48px]">
         {items.map((item, key) =>
           item.type == "directory" ? (
-            <DirectorItem key={key} item={item}></DirectorItem>
+            // @ts-expect-error Server Component
+            <DirectoryItem
+              dir={decodeURIComponent(dir)}
+              key={key}
+              item={item}
+            ></DirectoryItem>
           ) : (
-            <FileItem key={key} item={item}></FileItem>
+            <FileItem dir={dir} key={key} item={item}></FileItem>
           )
         )}
       </ul>

@@ -6,8 +6,8 @@ import ImageViewer from "./components/Image";
 import VideoViewer from "./components/Video";
 import { WithLoading } from "./components/Loading";
 
-function Playlist({ current }: { current: iFileItem }) {
-  const { mime, src } = usePlaylist(current);
+function Playlist({ dir, current }: { dir: string; current: iFileItem }) {
+  const { mime, src } = usePlaylist(dir, current);
   return (
     <WithLoading>
       <div className="p-4 w-full h-screen flex items-center justify-center">

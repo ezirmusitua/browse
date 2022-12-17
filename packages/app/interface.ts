@@ -1,9 +1,13 @@
+export enum eFileType {
+  FILE = "file",
+  DIRECTORY = "directory",
+}
+
 export interface iFileItem {
   id: string;
   name: string;
-  dir: string;
-  root: string;
-  type: "file" | "directory";
+  parent: string;
+  type: eFileType;
   sequence: [string, string];
   mime: string;
   children: iFileItem[];

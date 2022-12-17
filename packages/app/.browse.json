@@ -1,0 +1,241 @@
+{
+  "sequence": [
+    "",
+    ""
+  ],
+  "children": [
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "2",
+      "name": "app",
+      "parent": ".",
+      "type": "directory",
+      "mime": ""
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "3",
+      "name": "build",
+      "parent": ".",
+      "type": "directory",
+      "mime": ""
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "15",
+      "name": "components",
+      "parent": ".",
+      "type": "directory",
+      "mime": ""
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "4",
+      "name": "data.ts",
+      "parent": ".",
+      "type": "file",
+      "mime": "video/mp2t"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "5",
+      "name": "interface.ts",
+      "parent": ".",
+      "type": "file",
+      "mime": "video/mp2t"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "6",
+      "name": "next-env.d.ts",
+      "parent": ".",
+      "type": "file",
+      "mime": "video/mp2t"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "8",
+      "name": "next.config.js",
+      "parent": ".",
+      "type": "file",
+      "mime": "application/javascript"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "7",
+      "name": "node_modules",
+      "parent": ".",
+      "type": "directory",
+      "mime": ""
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "9",
+      "name": "package-lock.json",
+      "parent": ".",
+      "type": "file",
+      "mime": "application/json"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "10",
+      "name": "package.json",
+      "parent": ".",
+      "type": "file",
+      "mime": "application/json"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "11",
+      "name": "pages",
+      "parent": ".",
+      "type": "directory",
+      "mime": "application/vnd.apple.pages"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "12",
+      "name": "postcss.config.js",
+      "parent": ".",
+      "type": "file",
+      "mime": "application/javascript"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "13",
+      "name": "public",
+      "parent": ".",
+      "type": "directory",
+      "mime": ""
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "14",
+      "name": "README.md",
+      "parent": ".",
+      "type": "file",
+      "mime": "text/markdown"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "16",
+      "name": "server.js",
+      "parent": ".",
+      "type": "file",
+      "mime": "application/javascript"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "17",
+      "name": "styles",
+      "parent": ".",
+      "type": "directory",
+      "mime": ""
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "18",
+      "name": "tailwind.config.js",
+      "parent": ".",
+      "type": "file",
+      "mime": "application/javascript"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "19",
+      "name": "tsconfig.json",
+      "parent": ".",
+      "type": "file",
+      "mime": "application/json"
+    },
+    {
+      "sequence": [
+        "",
+        ""
+      ],
+      "children": [],
+      "id": "20",
+      "name": "yarn.lock",
+      "parent": ".",
+      "type": "file",
+      "mime": ""
+    }
+  ],
+  "id": "1",
+  "name": ".",
+  "parent": ".",
+  "type": "directory",
+  "mime": ""
+}

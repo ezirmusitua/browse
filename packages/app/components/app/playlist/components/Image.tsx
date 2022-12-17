@@ -14,13 +14,15 @@ function ImageViewer({ src, mime }: iProps) {
   if (!mime.startsWith("image")) return null;
   return (
     <div className="relative w-full h-full">
-      <NextImage
+      <img
         className="object-contain"
         src={src}
         onLoadingComplete={hide_loading}
         alt=""
         fill
-      ></NextImage>
+        unoptimized
+        quality={50}
+      ></img>
       <Loading></Loading>
     </div>
   );

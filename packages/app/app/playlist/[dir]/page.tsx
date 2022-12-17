@@ -3,21 +3,23 @@ import Actions from "../../../components/app/playlist/components/Actions";
 
 interface iProps {
   params: { dir: string };
-  searchParams: { id?: string };
+  searchParams: { path?: string };
 }
 
-async function get_file_data(dir: string, id?: string) {
-  let url = `http://127.0.0.1:8080/api/file_info?dir=${dir}`;
-  url += id ? `&id=${id}` : "";
+async function get_file_data(path: string) {
+  let url = `http://127.0.0.1:8080/api/file_info?path=${path}`;
   const resp = await fetch(url);
   return resp.json();
 }
 
-async function PlaylistPage({ params: { dir }, searchParams: { id } }: iProps) {
-  const current = await get_file_data(dir, id || "");
+async function PlaylistPage({
+  params: { dir },
+  searchParams: { path },
+}: iProps) {
+  const current = await get_file_data(path || dir);
   return (
     <>
-      <Playlist current={current}></Playlist>
+      <Playlist dir={decodeURIComponent(dir)} current={current}></Playlist>
       <Actions></Actions>
     </>
   );

@@ -28,13 +28,17 @@
     "mime-types": "^2.1.35",
     "next": "13.0.6",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "sql.js": "^1.8.0",
+    "sqlite3": "^5.1.2"
   },
   "devDependencies": {
     "@types/keyboardjs": "^2.5.0",
     "@types/mime-types": "^2.1.1",
     "@types/node": "18.11.12",
     "@types/react": "18.0.26",
+    "@types/sql.js": "^1.4.4",
+    "@types/sqlite3": "^3.1.8",
     "autoprefixer": "^10.4.13",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",

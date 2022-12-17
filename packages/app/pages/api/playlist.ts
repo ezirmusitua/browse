@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import get_file_item from "../../data";
+import get_item from "../../data";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { dir } = req.query;
-  const state = await get_file_item(dir + "");
+  const path = req.query.dir + "";
+  const state = await get_item(path);
   return res.status(200).json(state);
 }

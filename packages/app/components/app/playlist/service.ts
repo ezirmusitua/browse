@@ -8,35 +8,46 @@ function handle_unload() {
   return fetch("api/shutdown", { method: "POST" });
 }
 
-export const usePlaylist = (current: iFileItem) => {
+export const usePlaylist = (dir: string, current: iFileItem) => {
   const router = useRouter();
 
   const mime = useMemo(() => current.mime, [current.mime]);
 
   const src = useMemo(
-    () => `/api/file?id=${current.id}&dir=${current.root}`,
-    [current.id, current.root]
+    () =>
+      `/api/file?path=${encodeURIComponent(
+        `${current.parent}/${current.name}`
+      )}`,
+    [current.parent, current.name]
   );
 
-  const handle_up = useCallback(() => {
-    if (current.sequence[0]) {
-      return router.push(
-        `/playlist/${encodeURIComponent(current.root)}?id=${
-          current.sequence[0]
-        }`
-      );
-    }
-  }, [current.sequence, router, current.root]);
+  const handle_up = useCallback(
+    (e: Event) => {
+      e.preventDefault();
+      if (current.sequence[0]) {
+        return router.push(
+          `/playlist/${encodeURIComponent(dir)}?path=${encodeURIComponent(
+            current.sequence[0]
+          )}`
+        );
+      }
+    },
+    [dir, current.sequence, router]
+  );
 
-  const handle_down = useCallback(() => {
-    if (current.sequence[1]) {
-      return router.push(
-        `/playlist/${encodeURIComponent(current.root)}?id=${
-          current.sequence[1]
-        }`
-      );
-    }
-  }, [current.sequence, router, current.root]);
+  const handle_down = useCallback(
+    (e: Event) => {
+      e.preventDefault();
+      if (current.sequence[1]) {
+        return router.push(
+          `/playlist/${encodeURIComponent(dir)}?path=${encodeURIComponent(
+            current.sequence[1]
+          )}`
+        );
+      }
+    },
+    [dir, current.sequence, router]
+  );
 
   useEffect(() => {
     keyboard.bind("up", handle_up);
