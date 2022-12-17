@@ -7,7 +7,9 @@ interface iProps {
 }
 
 async function get_file_data(path: string) {
-  let url = `http://127.0.0.1:8080/api/file_info?path=${path}`;
+  let url = `http://127.0.0.1:8080/api/file_info?path=${encodeURIComponent(
+    path
+  )}`;
   const resp = await fetch(url);
   return resp.json();
 }
@@ -16,10 +18,11 @@ async function PlaylistPage({
   params: { dir },
   searchParams: { path },
 }: iProps) {
-  const current = await get_file_data(path || dir);
+  const _dir = decodeURIComponent(dir);
+  const current = await get_file_data(path || _dir);
   return (
     <>
-      <Playlist dir={decodeURIComponent(dir)} current={current}></Playlist>
+      <Playlist dir={_dir} current={current}></Playlist>
       <Actions></Actions>
     </>
   );

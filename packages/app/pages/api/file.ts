@@ -63,9 +63,7 @@ export default async function handler(
   if (req.method != "GET") return res.status(404).end("Method Not Allowed");
   let { path } = req.query;
   path = decodeURIComponent(path + "");
-  console.time(path);
   const target = await get_item(path);
-  console.timeEnd(path);
   if (!target) return res.status(404).end("Not Found");
   if (target.mime.startsWith("image")) return pipe_stream(path, {}, res);
   if (target.mime.startsWith("video")) return pipe_video(path, req, res);

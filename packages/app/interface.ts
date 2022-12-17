@@ -7,7 +7,7 @@ export interface iFileItem {
   name: string;
   parent: string;
   type: eFileType;
-  sequence: [string, string];
+  sequence: string[];
   mime: string;
   children: iFileItem[];
 }
