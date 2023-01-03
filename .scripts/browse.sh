@@ -23,4 +23,4 @@ yarn start > /tmp/browse.log 2>&1 &
 
 encoded=$(urlencode "$1")
 
-open "http://127.0.0.1:8080/playlist/$encoded"
+open "http://localhost:8080/playlist/$encoded"
