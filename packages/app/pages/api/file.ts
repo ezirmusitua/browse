@@ -1,9 +1,10 @@
-import * as path from "path";
 import { createReadStream } from "fs";
 import * as fs from "fs/promises";
-import { NextApiRequest, NextApiResponse } from "next";
 import * as mime from "mime-types";
-import get_item from "../../data";
+import { NextApiRequest, NextApiResponse } from "next";
+import * as path from "path";
+import getItem from "../../data";
+import { enable_cors } from "./file_info";
 
 const CHUNK_SIZE = 10 ** 6; // 1MB
 
@@ -60,12 +61,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  await enable_cors(req, res);
   if (req.method != "GET") return res.status(404).end("Method Not Allowed");
   let { path } = req.query;
   path = decodeURIComponent(path + "");
-  const target = await get_item(path);
+  const target = await getItem(path);
   if (!target) return res.status(404).end("Not Found");
   if (target.mime.startsWith("image")) return pipe_stream(path, {}, res);
   if (target.mime.startsWith("video")) return pipe_video(path, req, res);
   return res.status(200).end(target.name);
 }
+
+export const config = { api: { responseLimit: false } };

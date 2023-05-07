@@ -2,19 +2,12 @@
 import { useSearchParams } from "next/navigation";
 import * as path from "path";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { eFileType, iFileItem } from "../../interface";
+import { getJson } from "../../fetch";
+import { iFileItem } from "../../interface";
 import FileItem from "./FileItem";
 
-async function load_directory(path: string) {
-  try {
-    const resp = await fetch(
-      `http://localhost:8080/api/file_info?path=${encodeURIComponent(path)}`
-    );
-    return resp.json();
-  } catch (e) {
-    console.log(`[ERROR] -> load failed ${e.message}`);
-    return { children: [] };
-  }
+async function loadDirectory(path: string) {
+  return getJson("/api/file_info", null, { path });
 }
 
 interface iProps {
@@ -44,7 +37,7 @@ function DirectoryItem({ dir, item, depth }: iProps) {
   const load = useCallback(async () => {
     if (loading || collapsed || children.length != 0) return;
     set_loading(true);
-    const ret = await load_directory(path.join(item.parent, item.name));
+    const ret = await loadDirectory(path.join(item.parent, item.name));
     set_loading(false);
     set_children(ret.children);
   }, [collapsed, loading, children, item.parent, item.name]);

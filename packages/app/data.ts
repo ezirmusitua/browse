@@ -54,13 +54,13 @@ export class FileItem implements iFileItem {
   }
 }
 
-function get_index_path(dir: string) {
+function getIndexPath(dir: string) {
   return path.join(dir, `.browse.json`);
 }
 
-async function save_index(item: FileItem) {
+async function saveIndex(item: FileItem) {
   return fs.writeFile(
-    get_index_path(item.path),
+    getIndexPath(item.path),
     JSON.stringify(
       {
         ...item,
@@ -72,7 +72,7 @@ async function save_index(item: FileItem) {
   );
 }
 
-async function list_files(item: FileItem) {
+async function listFiles(item: FileItem) {
   let inside_directory = await fs.readdir(item.path);
   return inside_directory
     .sort((p, n) => p.localeCompare(n))
@@ -89,11 +89,11 @@ export async function build_indexes_iteratively(
     const item = await FileItem.create(candidate[0], candidate[1]);
     if (!item) return { item: null, new_candidates: [] };
     if (item.type == eFileType.DIRECTORY) {
-      const files = await list_files(item); // ignore hidden files
+      const files = await listFiles(item); // ignore hidden files
       item.children = await Promise.all(
         files.map((file) => FileItem.create(item.path, file))
       );
-      await save_index(item);
+      await saveIndex(item);
       const new_candidates = item.children
         .filter((i) => i.type == eFileType.DIRECTORY)
         .map((i) => [i.parent, i.name]);
@@ -115,8 +115,8 @@ export async function build_indexes_iteratively(
   return item;
 }
 
-async function get_directory_item(filepath: string) {
-  const index_path = get_index_path(filepath);
+async function getDirectoryItem(filepath: string) {
+  const index_path = getIndexPath(filepath);
 
   try {
     if (existsSync(index_path)) {
@@ -132,7 +132,7 @@ async function get_directory_item(filepath: string) {
   );
 }
 
-async function build_sequence(parent: iFileItem, file: iFileItem) {
+async function buildSequence(parent: iFileItem, file: iFileItem) {
   const index = parent.children.findIndex((i) => i.name == file.name);
   const is_first = index == 0;
   const is_last = index === parent.children.length - 1;
@@ -144,14 +144,14 @@ async function build_sequence(parent: iFileItem, file: iFileItem) {
     ];
   }
 
-  const ancestor = await get_item(parent.parent);
+  const ancestor = await getItem(parent.parent);
   const parent_index = ancestor.children.findIndex(
     (i: iFileItem) => i.name == parent.name
   );
   const get_siblings = async (offset: number) => {
     let uncle = ancestor.children[parent_index + offset];
     if (!uncle) return ancestor.children[parent_index].children;
-    const { children } = await get_item(path.join(uncle.parent, uncle.name));
+    const { children } = await getItem(path.join(uncle.parent, uncle.name));
     return children;
   };
   if (is_first) {
@@ -170,16 +170,16 @@ async function build_sequence(parent: iFileItem, file: iFileItem) {
   return result;
 }
 
-async function get_item(filepath: string) {
+async function getItem(filepath: string) {
   try {
     const stat = await fs.stat(filepath);
-    if (stat.isDirectory()) return get_directory_item(filepath);
+    if (stat.isDirectory()) return getDirectoryItem(filepath);
     const dir = path.dirname(filepath);
-    const parent_item = await get_directory_item(dir);
+    const parent_item = await getDirectoryItem(dir);
     const file_item = parent_item.children.find(
       (i) => i.name == path.basename(filepath)
     );
-    const sequence = await build_sequence(parent_item, file_item);
+    const sequence = await buildSequence(parent_item, file_item);
     return { ...file_item, sequence };
   } catch (e) {
     console.log("[ERROR] get item failed ", e);
@@ -194,4 +194,4 @@ async function get_item(filepath: string) {
   }
 }
 
-export default get_item;
+export default getItem;

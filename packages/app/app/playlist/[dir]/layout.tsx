@@ -1,14 +1,8 @@
 import Sider from "../../../components/Layout/Sider";
+import { getJson } from "../../../fetch";
 
-async function load_root(path: string) {
-  try {
-    const resp = await fetch(
-      `http://127.0.0.1:8080/api/file_info?path=${path}`
-    );
-    return resp.json();
-  } catch (e) {
-    console.log("[ERROR] load root failed ", e);
-  }
+async function loadRoot(path: string) {
+  return getJson(`/api/file_info`, null, { path });
 }
 
 async function PlaylistLayout({
@@ -18,7 +12,7 @@ async function PlaylistLayout({
   children: React.ReactNode;
   params: { dir: string };
 }) {
-  const root = await load_root(dir);
+  const root = await loadRoot(decodeURIComponent(dir));
   if (!root) return <div>Something went wrong!</div>;
   return (
     <div className="min-h-screen overflow auto">
