@@ -1,6 +1,6 @@
 import Cors from "cors";
 import { NextApiResponse, NextApiRequest } from "next";
-import getItem from "../../data";
+import { getDirectoryInfo } from "../../data";
 
 export const enable_cors = (req: NextApiRequest, res: NextApiResponse) => {
   return new Promise((resolve, reject) => {
@@ -16,8 +16,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   await enable_cors(req, res);
-  if (req.method != "GET") return res.status(404).end("Method Not Allowed");
+  if (req.method != "GET") {
+    return res.status(404).end("Method Not Allowed");
+  }
   const path = req.query.path + "";
-  const item = await getItem(path);
+  console.log("[DEBUG] -> path ", path);
+  const item = await getDirectoryInfo(path);
   return res.status(200).json(item);
 }

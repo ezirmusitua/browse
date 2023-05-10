@@ -21,7 +21,7 @@
     "url": "git+https://github.com/ezirmusitua/browse.git"
   },
   "scripts": {
-    "dev:serve": "nodemon ./index.ts -- serve -p 8081 -h 0.0.0.0 -d .artifacts/sample",
+    "dev": "nodemon ./index.ts -- serve -p 8081 -h 0.0.0.0 -d /Users/jz/Downloads/tmp",
     "build": "tsc -b .",
     "test": "node ./__tests__/static_server.test.js"
   },

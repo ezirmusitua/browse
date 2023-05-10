@@ -1,10 +1,11 @@
 import { getFileMetadata } from "./fs";
 import { validateHttpMethod } from "./guards";
 import serveImage from "./mimes/image";
+import serveMeta from "./mimes/meta";
 import serveOther from "./mimes/other";
-import serveVideo, { serveVideoMeta } from "./mimes/video";
+import serveVideo from "./mimes/video";
 import { iRouteHandler } from "./types";
-import { NotFound, parseQuery, Success } from "./utils";
+import { NotFound, parseQuery } from "./utils";
 
 export const serveHandler: iRouteHandler = async (req, resp) => {
   if (!validateHttpMethod(req, resp)) return;
@@ -13,7 +14,7 @@ export const serveHandler: iRouteHandler = async (req, resp) => {
   const meta = await getFileMetadata(path);
   if (!meta) return NotFound(resp);
   if (req.method === "HEAD") {
-    return serveVideoMeta(meta.path, req, resp);
+    return serveMeta(meta.path, req, resp);
   }
   if (meta.mime.startsWith("image/")) {
     return serveImage(meta.path, req, resp);

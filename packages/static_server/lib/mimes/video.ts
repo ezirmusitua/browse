@@ -36,12 +36,3 @@ const serveVideo: iMimeServeFunc = async (path, req, resp) => {
 };
 
 export default serveVideo;
-
-export const serveVideoMeta: iMimeServeFunc = async (path, req, resp) => {
-  const stat = await fs.stat(path);
-  resp.statusCode = 200;
-  resp.setHeader("accept-ranges", "bytes");
-  resp.setHeader("content-length", stat.size);
-  resp.end();
-  return resp;
-};

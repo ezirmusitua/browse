@@ -19,18 +19,18 @@ export function FileItem({ dir, item }: iProps) {
   const href = useMemo(
     () =>
       `/playlist/${encodeURIComponent(dir)}?path=${encodeURIComponent(
-        `${item.parent}/${item.name}`
+        item.path
       )}`,
-    [dir, item.parent, item.name]
+    [dir, item.path]
   );
 
   const className = useMemo(() => {
-    let name =
-      "text-[12px] cursor-pointer pl-2 text-white leading-[24px] line-clamp-1";
+    const name =
+      "file_item cursor-pointer pl-2 text-white text-[12px] leading-[24px] line-clamp-1";
     return name + (active ? " bg-blue-800" : "");
   }, [active]);
 
-  const scroll_into_view = useCallback(
+  const scrollIntoView = useCallback(
     (node: Element) => {
       if (!active || !node) return;
       // @ts-ignore
@@ -45,7 +45,7 @@ export function FileItem({ dir, item }: iProps) {
         title={item.name}
         data-srctype="file"
         className={className}
-        ref={scroll_into_view}
+        ref={scrollIntoView}
       >
         {item.name}
       </li>

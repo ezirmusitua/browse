@@ -15,13 +15,13 @@ export const usePlaylist = (dir: string, current: iFileItem) => {
 
   const src = useMemo(
     () =>
-      `/api/file?path=${encodeURIComponent(
-        `${current.parent}/${current.name}`
+      `${process.env.NEXT_PUBLIC_ASSET_BASE}/?path=${encodeURIComponent(
+        current.path
       )}`,
-    [current.parent, current.name]
+    [current.path]
   );
 
-  const handle_up = useCallback(
+  const handleUp = useCallback(
     (e: Event) => {
       e.preventDefault();
       if (current.sequence[0]) {
@@ -35,7 +35,7 @@ export const usePlaylist = (dir: string, current: iFileItem) => {
     [dir, current.sequence, router]
   );
 
-  const handle_down = useCallback(
+  const handleDown = useCallback(
     (e: Event) => {
       e.preventDefault();
       if (current.sequence[1]) {
@@ -50,14 +50,14 @@ export const usePlaylist = (dir: string, current: iFileItem) => {
   );
 
   useEffect(() => {
-    keyboard.bind("up", handle_up);
-    keyboard.bind("down", handle_down);
+    keyboard.bind("up", handleUp);
+    keyboard.bind("down", handleDown);
     window.onunload = handle_unload;
     return () => {
-      keyboard.unbind("up", handle_up);
-      keyboard.unbind("down", handle_down);
+      keyboard.unbind("up", handleUp);
+      keyboard.unbind("down", handleDown);
     };
-  }, [handle_up, handle_down]);
+  }, [handleUp, handleDown]);
 
   return { src, mime };
 };

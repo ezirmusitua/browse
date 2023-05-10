@@ -6,8 +6,7 @@
   "license": "MIT",
   "scripts": {
     "pkg": "lerna run pkg",
-    "dev": "lerna run dev --parallel",
-    "dev:serve": "lerna run dev:serve --stream"
+    "dev": "lerna run dev --parallel"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",

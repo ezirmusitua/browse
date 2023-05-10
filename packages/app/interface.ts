@@ -3,11 +3,18 @@ export enum eFileType {
   DIRECTORY = "directory",
 }
 
-export interface iFileItem {
+export interface iShallowFileItem {
   name: string;
   parent: string;
+  extension: string;
+  path: string;
   type: eFileType;
-  sequence: string[];
   mime: string;
-  children: iFileItem[];
+  modified_at: number;
+  created_at: number;
+}
+
+export interface iFileItem extends iShallowFileItem {
+  children: iShallowFileItem[];
+  sequence: string[];
 }

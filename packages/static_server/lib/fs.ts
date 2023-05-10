@@ -6,7 +6,15 @@ import { Config } from "./config";
 
 const config = new Config();
 export async function getFileMetadata(file: string) {
-  const fp = path.join(config.get("base"), file);
+  let fp = "";
+  if (!file.startsWith("/")) {
+    fp = path.join(config.get("base"), file);
+  } else if (!file.startsWith(config.get("base"))) {
+    console.log(file, config.get("base"));
+    throw new Error(`服务器无法处理请求路径，请重新设置服务器可访问路径`);
+  } else {
+    fp = file;
+  }
   if (!existsSync(fp)) return undefined;
   const stat = await fs.stat(fp);
   if (stat.isDirectory()) {

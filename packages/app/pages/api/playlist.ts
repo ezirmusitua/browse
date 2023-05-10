@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import getItem from "../../data";
+import { getDirectoryInfo } from "../../data";
 import { enable_cors } from "./file_info";
 
 export default async function handler(
@@ -7,7 +7,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   await enable_cors(req, res);
-  const path = req.query.dir + "";
-  const state = await getItem(path);
+  const state = await getDirectoryInfo(req.query.dir + "");
   return res.status(200).json(state);
 }

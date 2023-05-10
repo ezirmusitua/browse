@@ -7,7 +7,7 @@ interface iProps {
   searchParams: { path?: string };
 }
 
-async function getFileIata(path: string) {
+async function getFileData(path: string) {
   return getJson("/api/file_info", null, { path });
 }
 
@@ -16,7 +16,9 @@ async function PlaylistPage({
   searchParams: { path },
 }: iProps) {
   const _dir = decodeURIComponent(dir);
-  const current = await getFileIata(path || _dir);
+  console.log("[DEBUG] playlist page ", _dir, path);
+  const current = await getFileData(path || _dir);
+  console.log("[DEBUG] file data ", _dir, current);
   return (
     <>
       <Playlist dir={_dir} current={current}></Playlist>
