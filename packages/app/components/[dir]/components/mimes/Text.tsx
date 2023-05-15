@@ -1,5 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { LoadingContext } from "../Loading";
+import { useCallback, useEffect, useState } from "react";
 import { iMimeBaseProps } from "./interface";
 // pdf
 
@@ -17,19 +16,17 @@ function canRender(mime: string) {
 async function getText(src: string) {
   const resp = await fetch(src);
   const content = await resp.text();
-  console.log("[DEBUG] content ", content);
   return content;
 }
 
 function CodeViewer({ src, mime }: iMimeBaseProps) {
-  const { hide: hideLoading } = useContext<{ hide: any }>(LoadingContext);
   const [content, setContent] = useState("");
 
   const load = useCallback(async () => {
-    if (!src) return;
+    if (!src || !canRender(mime)) return;
     const data = await getText(src);
     setContent(data);
-  }, [src]);
+  }, [src, mime]);
 
   useEffect(() => {
     load();
@@ -38,7 +35,7 @@ function CodeViewer({ src, mime }: iMimeBaseProps) {
   if (!canRender(mime)) return null;
   return (
     <div className="relative w-full h-full">
-      <pre>
+      <pre className="px-6 py-4 bg-gray-100 rounded-md overflow-auto">
         <code>{content}</code>
       </pre>
     </div>

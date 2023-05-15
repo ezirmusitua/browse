@@ -1,5 +1,6 @@
-import { getFileMetadata } from "./fs";
+import { detectFile } from "./fs";
 import { validateHttpMethod } from "./guards";
+import serveAttributes from "./mimes/attribute";
 import serveImage from "./mimes/image";
 import serveMeta from "./mimes/meta";
 import serveOther from "./mimes/other";
@@ -11,8 +12,12 @@ export const serveHandler: iRouteHandler = async (req, resp) => {
   if (!validateHttpMethod(req, resp)) return;
   let query = parseQuery(req);
   const path = query.path || "";
-  const meta = await getFileMetadata(path);
+  const serve = query.serve || "content";
+  const meta = await detectFile(path);
   if (!meta) return NotFound(resp);
+  if (serve == "attributes") {
+    return serveAttributes(meta.path, req, resp);
+  }
   if (req.method === "HEAD") {
     return serveMeta(meta.path, req, resp);
   }

@@ -20,7 +20,6 @@ export default async function handler(
     return res.status(404).end("Method Not Allowed");
   }
   const path = req.query.path + "";
-  console.log("[DEBUG] -> path ", path);
   const item = await getDirectoryInfo(path);
   return res.status(200).json(item);
 }

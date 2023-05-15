@@ -1,15 +1,13 @@
-"use client";
-
-import { iFileItem } from "../../../interface";
-import { usePlaylist } from "./service";
-import ImageViewer from "./components/mimes/Image";
-import VideoViewer from "./components/mimes/Video";
+import Loading from "../Loading";
 import { WithLoading } from "./components/Loading";
-import CodeViewer from "./components/mimes/CodeContent";
+import ImageViewer from "./components/mimes/Image";
+import CodeViewer from "./components/mimes/Text";
+import VideoViewer from "./components/mimes/Video";
+import { usePlaylistPreview } from "./service";
 
-function Playlist({ dir, current }: { dir: string; current: iFileItem }) {
-  const { mime, src } = usePlaylist(dir, current);
-  console.log("[DEBUG] playlist ", mime, src);
+function Playlist() {
+  const { mime, src } = usePlaylistPreview();
+  if (!src) return <Loading></Loading>;
   return (
     <WithLoading>
       <div className="p-4 w-full h-screen flex items-center justify-center">

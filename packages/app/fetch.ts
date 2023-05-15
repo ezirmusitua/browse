@@ -10,15 +10,19 @@ class FetchError extends Error {
 function buildUrl(
   path: string,
   params?: Record<string, any>,
-  query?: Record<string, any>
+  query?: Record<string, any>,
+  base = resource_base
 ) {
   if (!path.startsWith("/")) throw new Error("Path must stats with `/`");
-  const query_string = new URLSearchParams(query || {}).toString();
+  const query_string = Object.keys(query || {})
+    .map((key) => `${key}=${encodeURIComponent((query || {})[key])}`)
+    .join("&");
   path = Object.keys(params || {}).reduce(
-    (acc, key) => acc.replace(`:${key}`, params[key]),
+    (acc, key) =>
+      acc.replace(`:${key}`, encodeURIComponent((params || {})[key])),
     path
   );
-  return `${resource_base}${path}?${query_string}`;
+  return `${base}${path}?${query_string}`;
 }
 
 async function handleError(url: string, options: RequestInit) {
@@ -37,10 +41,20 @@ async function handleError(url: string, options: RequestInit) {
 export async function getJson(
   path: string,
   params?: Record<string, any>,
-  query?: Record<string, any>
+  query?: Record<string, any>,
+  base?: string
 ) {
-  const resp = await handleError(buildUrl(path, params, query), {
+  const resp = await handleError(buildUrl(path, params, query, base), {
     method: "GET",
   });
   return resp.json();
+}
+
+export async function getFileInfo(path: string) {
+  return getJson(
+    "/",
+    undefined,
+    { path, serve: "attributes" },
+    process.env.NEXT_PUBLIC_ASSET_BASE || ""
+  );
 }

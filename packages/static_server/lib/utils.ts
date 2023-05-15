@@ -31,10 +31,13 @@ export function parseHumanSize(size: string) {
 
 export function parseQuery(req: http.IncomingMessage) {
   const query_string = (req.url || "").split("?").pop() || "";
-  return query_string.split("&").reduce((acc: Record<string, any>, part) => {
-    const [key, value] = part.split("=");
-    return { ...acc, [key.trim()]: decodeURIComponent((value || "").trim()) };
-  }, {});
+  const query = query_string
+    .split("&")
+    .reduce((acc: Record<string, any>, part) => {
+      const [key, value] = part.split("=");
+      return { ...acc, [key.trim()]: decodeURIComponent((value || "").trim()) };
+    }, {});
+  return query;
 }
 
 export function NotFound(resp: http.ServerResponse, message = "Not Found") {

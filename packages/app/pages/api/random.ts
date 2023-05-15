@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import * as path from "path";
-import getItem from "../../data";
+import { getDirectoryInfo } from "../../data";
 import { eFileType, iFileItem } from "../../interface";
 import { enable_cors } from "./file_info";
 
@@ -18,7 +18,7 @@ export default async function handler(
   if (req.method != "GET") return res.status(404).end("Method Not Allowed");
   const dir = req.query.dir + "";
   const guess_count = random_int(MAX_GUESS_COUNT);
-  let item: iFileItem = await getItem(dir);
+  let item: iFileItem = await getDirectoryInfo(dir);
   let parent = { ...item };
   for await (const _ of Array.from({ length: guess_count })) {
     const candidates = item.children.filter(
@@ -26,7 +26,7 @@ export default async function handler(
     );
     if (candidates.length != 0) {
       item = candidates[random_int(candidates.length)];
-      item = await getItem(path.join(item.parent, item.name));
+      item = await getDirectoryInfo(path.join(item.parent, item.name));
     } else {
       item = { ...parent };
     }

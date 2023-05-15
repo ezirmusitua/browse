@@ -1,7 +1,24 @@
-import * as fs from "fs/promises";
+import * as fs from "node:fs/promises";
+import { iMimeServeFunc } from "./types";
 import * as mimes from "mime-types";
 import * as path from "path";
-import { eFileType, iFileItem, iShallowFileItem } from "./interface";
+
+export enum eFileType {
+  FILE = "file",
+  DIRECTORY = "directory",
+}
+
+export interface iFileItem {
+  name: string;
+  parent: string;
+  extension: string;
+  path: string;
+  type: eFileType;
+  mime: string;
+  modified_at: number;
+  created_at: number;
+  children?: iFileItem[];
+}
 
 async function buildFileItem(parent: string, filename: string) {
   const file_path = path.join(parent, filename);
@@ -28,7 +45,7 @@ async function buildFileItem(parent: string, filename: string) {
   }
 }
 
-async function listFiles(item: iShallowFileItem) {
+async function listFiles(item: iFileItem) {
   let filenames = await fs.readdir(item.path);
   return Promise.all(
     filenames
@@ -38,9 +55,9 @@ async function listFiles(item: iShallowFileItem) {
   );
 }
 
-export async function getDirectoryInfo(dir_path: string) {
-  const parent = path.dirname(dir_path);
-  const basename = path.basename(dir_path);
+export async function buildAttributes(file_path: string) {
+  const parent = path.dirname(file_path);
+  const basename = path.basename(file_path);
   const root = await buildFileItem(parent, basename);
   let children: iFileItem[] = [];
   if (root.type == eFileType.DIRECTORY) {
@@ -48,3 +65,15 @@ export async function getDirectoryInfo(dir_path: string) {
   }
   return { ...root, children };
 }
+
+const serveAttributes: iMimeServeFunc = async (file_path, req, resp) => {
+  const attributes = await buildAttributes(file_path);
+  const buffer = Buffer.from(JSON.stringify(attributes, null, 2));
+  resp.statusCode = 200;
+  resp.setHeader("Content-Type", "application/json");
+  resp.setHeader("Content-Length", buffer.length);
+  resp.end(buffer);
+  return resp;
+};
+
+export default serveAttributes;

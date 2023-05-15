@@ -15,6 +15,5 @@ export interface iShallowFileItem {
 }
 
 export interface iFileItem extends iShallowFileItem {
-  children: iShallowFileItem[];
-  sequence: string[];
+  children?: iShallowFileItem[];
 }
