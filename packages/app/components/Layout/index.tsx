@@ -1,6 +1,6 @@
 import { iFileItem } from "../../interface";
 import Loading from "../Loading";
-import Sider from "./Sider";
+import Sider, { SIDE_WIDTH } from "./Sider";
 
 interface iProps {
   root: iFileItem;
@@ -18,7 +18,8 @@ function Layout({ root, children }: iProps) {
       ></Sider>
       <main
         id="main"
-        className="w-full h-full pl-[240px] bg-gray-800 transition-all duration-50"
+        className="w-full h-full bg-gray-800 transition-all duration-50"
+        style={{ paddingLeft: SIDE_WIDTH }}
       >
         {children}
       </main>

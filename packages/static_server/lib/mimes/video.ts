@@ -1,14 +1,10 @@
-import * as mime from "mime-types";
 import * as fs from "node:fs/promises";
-import * as path from "node:path";
-import { pipeStream } from "../utils";
+import { getMime, pipeStream } from "../utils";
 import { iMimeServeFunc } from "./types";
 
 async function prepareResponse(filepath: string, range?: string) {
   const { size } = await fs.stat(filepath);
-  const headers: Array<[string, any]> = [
-    ["Content-Type", mime.contentType(path.extname(filepath))],
-  ];
+  const headers: Array<[string, any]> = [["Content-Type", getMime(filepath)]];
   if (range) {
     range = range.replace(/bytes=/gi, "");
     let [start, end] = range.split("-").map(Number);

@@ -1,16 +1,15 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import * as mime from "mime-types";
-import { pipeStream } from "../utils";
+import { getMime, pipeStream } from "../utils";
 import { iMimeServeFunc } from "./types";
 
-const serveOther: iMimeServeFunc = async (target, req, resp) => {
-  const { size } = await fs.stat(target);
-  const mime_type = mime.contentType(path.extname(target));
+const serveOther: iMimeServeFunc = async (fp, req, resp) => {
+  const { size } = await fs.stat(fp);
+  const mime_type = getMime(fp);
   if (!mime_type) {
     resp.setHeader(
       "Content-Disposition",
-      "attachment; filename=" + path.basename(target)
+      "attachment; filename=" + path.basename(fp)
     );
     resp.setHeader("Content-Type", "octet/octet-stream");
   } else {
@@ -18,7 +17,7 @@ const serveOther: iMimeServeFunc = async (target, req, resp) => {
   }
   resp.setHeader("Content-Length", size);
   resp.statusCode = 200;
-  return pipeStream(target, resp);
+  return pipeStream(fp, resp);
 };
 
 export default serveOther;

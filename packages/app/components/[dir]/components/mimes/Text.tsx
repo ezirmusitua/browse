@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { iMimeBaseProps } from "./interface";
-// pdf
+
+const AllowedMimes = [
+  /application\/json.*/gi,
+  /application\/toml.*/gi,
+  /application\/.*xml.*/gi,
+  /application\/javascript.*/gi,
+  /plain\/text.*/gi,
+  /text\/.*/gi,
+];
 
 function canRender(mime: string) {
-  const AllowedMime = [
-    /text\/.*/gi,
-    /application\/json.*/gi,
-    /application\/toml.*/gi,
-    /application\/.*xml.*/gi,
-    /application\/javascript.*/gi,
-  ];
-  return AllowedMime.some((allowed) => allowed.test(mime));
+  return AllowedMimes.some((allowed) => allowed.test(mime));
 }
 
 async function getText(src: string) {
@@ -33,6 +34,7 @@ function CodeViewer({ src, mime }: iMimeBaseProps) {
   }, [src, load]);
 
   if (!canRender(mime)) return null;
+
   return (
     <div className="relative w-full h-full">
       <pre className="px-6 py-4 bg-gray-100 rounded-md overflow-auto">

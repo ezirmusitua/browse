@@ -4,6 +4,8 @@ import DirectoryItem from "./DirectoryItem";
 import Title from "./Title";
 import Sequence from "../[dir]/components/Sequence";
 
+export const SIDE_WIDTH = "33.33%";
+
 interface iProps {
   dir: string;
   title: string;
@@ -12,26 +14,29 @@ interface iProps {
 
 function Sider({ dir, title, items }: iProps) {
   return (
-    <nav
-      id="sider"
-      className="z-50 fixed top-0 left-0 h-screen w-[240px] overflow-auto bg-gray-900 shadow-md transition-all duration-50"
-    >
+    <nav>
       <Title title={title}></Title>
-      <Sequence items={items}>
-        <ul className="text-[12px] pl-1 pt-[48px]">
-          {items.map((item, key) =>
-            item.type == "directory" ? (
-              <DirectoryItem
-                dir={decodeURIComponent(dir)}
-                key={key}
-                item={item}
-              ></DirectoryItem>
-            ) : (
-              <FileItem dir={dir} key={key} item={item}></FileItem>
-            )
-          )}
-        </ul>
-      </Sequence>
+      <div
+        id="sider"
+        className="z-100 fixed left-0 h-screen overflow-auto bg-gray-900 shadow-md transition-all duration-50"
+        style={{ width: SIDE_WIDTH }}
+      >
+        <Sequence items={items}>
+          <ul className="text-[12px] pt-[48px]">
+            {items.map((item, key) =>
+              item.type == "directory" ? (
+                <DirectoryItem
+                  dir={decodeURIComponent(dir)}
+                  key={key}
+                  item={item}
+                ></DirectoryItem>
+              ) : (
+                <FileItem dir={dir} key={key} item={item}></FileItem>
+              )
+            )}
+          </ul>
+        </Sequence>
+      </div>
     </nav>
   );
 }

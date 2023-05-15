@@ -1,20 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { SIDE_WIDTH } from "./Sider";
 
 function Title({ title }) {
-  const [sider, set_sider] = useState<Element>(null as any);
-  const [main, set_main] = useState<Element>(null as any);
-  const [collapsed, set_collapsed] = useState(false);
+  const [sider, setSider] = useState<Element | null>(null as any);
+  const [main, setMain] = useState<Element | null>(null as any);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    set_sider(document.querySelector("#sider"));
-    set_main(document.querySelector("#main"));
+    setSider(document.querySelector("#sider"));
+    setMain(document.querySelector("#main"));
   }, []);
 
   const style = useMemo(
     () => ({
-      width: collapsed ? 48 : 240,
+      width: collapsed ? 48 : SIDE_WIDTH,
       justifyContent: collapsed ? "center" : "space-between",
     }),
     [collapsed]
@@ -27,18 +28,20 @@ function Title({ title }) {
       main.style.paddingLeft = sider.style.width = "0";
     } else {
       // @ts-ignore
-      main.style.paddingLeft = sider.style.width = "240px";
+      main.style.paddingLeft = sider.style.width = SIDE_WIDTH;
     }
-    set_collapsed(!collapsed);
+    setCollapsed(!collapsed);
   }, [collapsed, sider, main]);
 
   return (
     <div
-      className="p-2 h-[48px] fixed top-0 left-0 flex items-center bg-black shadow-md text-white"
+      className="z-50 fixed top-0 left-0 p-2 h-[48px] flex items-center bg-black shadow-md text-white"
       style={style}
     >
       {!collapsed && <p className="mb-0 text-[14px] font-bold">{title}</p>}
-      <button onClick={toggleCollapsed}>{collapsed ? "▶" : "◀"}</button>
+      <button className="text-white" onClick={toggleCollapsed}>
+        {collapsed ? "▶" : "◀"}
+      </button>
     </div>
   );
 }

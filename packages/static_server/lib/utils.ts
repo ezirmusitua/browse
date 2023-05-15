@@ -1,5 +1,28 @@
+import * as path from "node:path";
 import * as http from "node:http";
+import * as mimes from "mime-types";
 import { createReadStream } from "node:fs";
+const TextFileExts = [
+  ".c",
+  ".cpp",
+  ".env",
+  ".h",
+  ".jsx",
+  ".py",
+  ".template",
+  ".tmpl",
+  ".ts",
+  ".tsx",
+];
+
+export function getMime(fp: string) {
+  const ext = path.extname(fp);
+  let mime_type = mimes.contentType(ext) || "";
+  if (TextFileExts.includes(ext) && !mime_type) {
+    mime_type = "plain/text; charset=utf-8";
+  }
+  return mime_type;
+}
 
 export function pipeStream<T extends NodeJS.WritableStream>(
   filepath: string,

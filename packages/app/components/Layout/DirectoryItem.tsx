@@ -1,36 +1,8 @@
-"use client";
-
 import { useMemo } from "react";
 import { iFileItem } from "../../interface";
 import { useDirectoryNavItem } from "../[dir]/service";
-import FileItem from "./FileItem";
-
-interface iDirectoryFilesProps {
-  dir: string;
-  opened: boolean;
-  files: iFileItem[];
-}
-
-function DirectoryFiles({ dir, opened, files }: iDirectoryFilesProps) {
-  if (!opened) return null;
-  return (
-    <div className="px-2 border border-gray-200">
-      <ul>
-        {files.map((child: iFileItem, index: number) => {
-          return (
-            <div key={index}>
-              {child.type == "directory" ? (
-                <DirectoryItem dir={dir} item={child}></DirectoryItem>
-              ) : (
-                <FileItem dir={dir} item={child as iFileItem}></FileItem>
-              )}
-            </div>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
+import DirectoryFiles from "./DirectoryFiles";
+import Filename from "./Filename";
 
 interface iProps {
   dir: string;
@@ -40,16 +12,11 @@ interface iProps {
 function DirectoryItem({ dir, item }: iProps) {
   const { active, opened, files, onClick } = useDirectoryNavItem(item);
 
-  const className = useMemo(() => {
-    let name = "px-2 py-2 mb-0 line-clamp-1 font-bold";
-    return name + (active ? " bg-blue-900 font-semibold" : "");
-  }, [active]);
-
   return (
     <li className="directory-item cursor-pointer text-[12px] text-white">
-      <p className={className} onClick={onClick}>
+      <Filename ext={item.extension} active={active} onClick={onClick}>
         {item.name}
-      </p>
+      </Filename>
       <DirectoryFiles dir={dir} opened={opened} files={files}></DirectoryFiles>
     </li>
   );

@@ -28,8 +28,12 @@ export const useFileInfo = (path?: string) => {
 
   const load = useCallback(async () => {
     if (!path) return;
-    const data = await getFileInfo(path);
-    setFile(data);
+    try {
+      const data = await getFileInfo(path);
+      setFile(data);
+    } catch (e) {
+      console.log(`[ERROR] file ${path} not found`);
+    }
   }, [path]);
 
   useEffect(() => {
@@ -86,17 +90,21 @@ export const useDirectoryNavItem = (item: iFileItem) => {
 
   const active = useMemo(() => {
     if (!path) return false;
-    return path.startsWith(item.path);
+    return path.startsWith(item.path + "/");
   }, [path, item.path]);
 
   const load = useCallback(async () => {
     if (loading || files.length != 0) return;
     setLoading(true);
-    const ret = await getFileInfo(item.path);
+    try {
+      const ret = await getFileInfo(item.path);
+      setFiles(ret.children);
+      updateSequence(item.path, ret.children);
+      await cacheDirectoryOpened(item.path);
+    } catch (e) {
+      console.log(`[ERROR] file ${item.path} not found`);
+    }
     setLoading(false);
-    setFiles(ret.children);
-    updateSequence(item.path, ret.children);
-    await cacheDirectoryOpened(item.path);
   }, [loading, files, item.path, updateSequence]);
 
   const onClick = useCallback(async () => {
@@ -144,7 +152,7 @@ export const useFileItem = (item: iFileItem) => {
   const getHref = useFileItemHref();
 
   const scrollIntoView = useCallback(
-    (node?: Element) => {
+    (node: Element | null) => {
       if (!active || !node) return;
       // @ts-ignore
       node.scrollIntoViewIfNeeded(true);

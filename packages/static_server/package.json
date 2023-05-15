@@ -21,7 +21,7 @@
     "url": "git+https://github.com/ezirmusitua/browse.git"
   },
   "scripts": {
-    "dev": "nodemon ./index.ts -- serve -p 8081 -h 0.0.0.0 -d /Users/jz/Downloads/tmp",
+    "dev": "nodemon ./index.ts -- serve",
     "build": "tsc -b .",
     "test": "node ./__tests__/static_server.test.js"
   },
@@ -36,6 +36,7 @@
   "dependencies": {
     "@types/mime-types": "^2.1.1",
     "commander": "^10.0.1",
+    "dotenv": "^16.0.3",
     "mime-types": "^2.1.35"
   }
 }

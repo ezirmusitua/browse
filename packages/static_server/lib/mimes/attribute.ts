@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
-import { iMimeServeFunc } from "./types";
-import * as mimes from "mime-types";
 import * as path from "path";
+import { getMime } from "../utils";
+import { iMimeServeFunc } from "./types";
 
 export enum eFileType {
   FILE = "file",
@@ -26,8 +26,7 @@ async function buildFileItem(parent: string, filename: string) {
     const stat = await fs.stat(file_path);
     const type = stat.isDirectory() ? eFileType.DIRECTORY : eFileType.FILE;
     const extension = path.extname(filename);
-    const mime =
-      (!stat.isDirectory() && extension && mimes.contentType(extension)) || "";
+    const mime = (!stat.isDirectory() && extension && getMime(filename)) || "";
     return {
       parent,
       name: path.basename(file_path, stat.isDirectory() ? "" : extension),
