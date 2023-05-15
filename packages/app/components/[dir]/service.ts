@@ -94,7 +94,7 @@ export const useDirectoryNavItem = (item: iFileItem) => {
   }, [path, item.path]);
 
   const load = useCallback(async () => {
-    if (loading || files.length != 0) return;
+    if (loading || opened || files.length != 0) return;
     setLoading(true);
     try {
       const ret = await getFileInfo(item.path);
@@ -105,7 +105,7 @@ export const useDirectoryNavItem = (item: iFileItem) => {
       console.log(`[ERROR] file ${item.path} not found`);
     }
     setLoading(false);
-  }, [loading, files, item.path, updateSequence]);
+  }, [loading, files, opened, item.path, updateSequence]);
 
   const onClick = useCallback(async () => {
     if (opened) {
@@ -127,6 +127,14 @@ export const useDirectoryNavItem = (item: iFileItem) => {
       }
     })();
   }, [item.path, load]);
+
+  useEffect(() => {
+    (async () => {
+      if (!active) return;
+      await load();
+      setOpened(true);
+    })();
+  }, [active, load]);
 
   return { active, opened, files, onClick };
 };
