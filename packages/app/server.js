@@ -1,13 +1,20 @@
-const { createServer } = require("http");
+// eslint-disable
+const { createServer } = require("node:http");
 const { parse } = require("url");
 const next = require("next");
+const next_config = require("./next.config");
+const fs = require("node:fs");
+const path = require("node:path");
+const dotenv = require("dotenv");
 
-const dev = process.env.NODE_ENV !== "production";
-const hostname = process.env.HOSTNAME || "0.0.0.0";
-const port = parseInt(process.env.PORT || "3000");
+dotenv.config();
+
+const dev = (process.env.NODE_ENV || "development") == "development";
+const hostname = process.env.HOST || "0.0.0.0";
+const port = parseInt(process.env.PORT || "8080");
 // when using middleware `hostname` and `port` must be provided below
 
-const app = next({ dev, hostname, port });
+const app = next({ dev, hostname, port, conf: next_config, dir: __dirname });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -17,7 +24,6 @@ app.prepare().then(() => {
       // This tells it to parse the query portion of the URL.
       const parsedUrl = parse(req.url, true);
       const { pathname, query } = parsedUrl;
-
       if (pathname === "/a") {
         await app.render(req, res, "/a", query);
       } else if (pathname === "/b") {

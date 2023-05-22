@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext } from "react";
-import { iFileItem } from "../../../../interface";
+import { iFileItem } from "../../../interface";
 import { useSequence } from "../service";
 
 export const SequenceContext = createContext({

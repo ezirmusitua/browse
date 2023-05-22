@@ -2,39 +2,40 @@
   "name": "@browse/app",
   "version": "0.1.0",
   "private": true,
-  "bin": "server.js",
   "scripts": {
-    "pkg": "pkg .",
-    "start:custom": "node server.js",
-    "dev": "next dev  --port 8080",
     "build": "next build",
-    "start": "next start --port 8080",
-    "lint": "next lint"
+    "dev": "next dev --port 8080",
+    "lint": "next lint",
+    "pkg": "pkg .",
+    "start": "PORT=8080 node server.js"
   },
+  "bin": "server.js",
   "pkg": {
     "compress": "GZip",
     "outputPath": "build",
     "assets": [
-      ".next",
+      ".next/**/*",
       "next.config.js"
     ],
+    "scripts": [
+      ".next/server/**/*.js"
+    ],
     "targets": [
-      "node18-macos-arm64"
+      "node18-macos-arm64",
+      "node18-win-x64"
     ]
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@tailwindcss/line-clamp": "^0.4.2",
+    "dotenv": "^16.0.3",
     "keyboardjs": "^2.7.0",
     "localforage": "^1.10.0",
     "mime-types": "^2.1.35",
     "next": "^13.4",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "sql.js": "^1.8.0",
-    "sqlite3": "^5.1.2"
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/keyboardjs": "^2.5.0",
