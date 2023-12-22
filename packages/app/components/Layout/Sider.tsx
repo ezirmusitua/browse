@@ -1,18 +1,17 @@
 import { iFileItem } from "../../interface";
+import Sequence from "../home/components/Sequence";
+import FolderNavItem from "./DirectoryItem";
 import FileItem from "./FileItem";
-import DirectoryItem from "./DirectoryItem";
 import Title from "./Title";
-import Sequence from "../[dir]/components/Sequence";
 
 export const SIDE_WIDTH = "33.33%";
 
 interface iProps {
-  dir: string;
   title: string;
   items: Array<iFileItem>;
 }
 
-function Sider({ dir, title, items }: iProps) {
+function Sider({ title, items }: iProps) {
   return (
     <nav>
       <Title title={title}></Title>
@@ -25,13 +24,9 @@ function Sider({ dir, title, items }: iProps) {
           <ul className="text-[12px] pt-[48px]">
             {items.map((item, key) =>
               item.type == "directory" ? (
-                <DirectoryItem
-                  dir={decodeURIComponent(dir)}
-                  key={key}
-                  item={item}
-                ></DirectoryItem>
+                <FolderNavItem key={key} item={item}></FolderNavItem>
               ) : (
-                <FileItem dir={dir} key={key} item={item}></FileItem>
+                <FileItem key={key} item={item}></FileItem>
               )
             )}
           </ul>

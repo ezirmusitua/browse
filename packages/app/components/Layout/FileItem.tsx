@@ -1,11 +1,32 @@
-"use client";
 import Link from "next/link";
+import { useCallback, useMemo } from "react";
 import { iFileItem } from "../../interface";
-import { useFileItem } from "../[dir]/service";
+import { useRouterQuery } from "../../utils";
+import { useFileItemHref } from "../home/service";
 import Filename from "./Filename";
 
+export const useFileItem = (item: iFileItem) => {
+  const { path } = useRouterQuery(["path"]);
+  const active = useMemo(() => {
+    if (!path) return false;
+    return item.path == path;
+  }, [path, item.path]);
+  const getHref = useFileItemHref();
+
+  const scrollIntoView = useCallback(
+    (node: Element | null) => {
+      if (!active || !node) return;
+      // @ts-ignore
+      node.scrollIntoViewIfNeeded(true);
+    },
+    [active]
+  );
+  const href = useMemo(() => getHref(item.path || ""), [getHref, item.path]);
+
+  return { href, active, scrollIntoView };
+};
+
 interface iProps {
-  dir: string;
   item: iFileItem;
 }
 

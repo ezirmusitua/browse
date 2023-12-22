@@ -1,4 +1,4 @@
-const resource_base = process.env.NEXT_PUBLIC_RESOURCE_BASE;
+const resource_base = process.env.NEXT_PUBLIC_ASSET_BASE;
 
 class FetchError extends Error {
   public readonly name = "FetchError";
@@ -44,10 +44,10 @@ export async function getJson(
   query?: Record<string, any>,
   base?: string
 ) {
-  const resp = await handleError(buildUrl(path, params, query, base), {
-    method: "GET",
-  });
-  return resp.json();
+  const url = buildUrl(path, params, query, base);
+  const resp = await handleError(url, { method: "GET", mode: "cors" });
+  const data = await resp.json();
+  return data;
 }
 
 export async function getFileInfo(path: string) {

@@ -1,16 +1,13 @@
-import { useMemo } from "react";
 import { iFileItem } from "../../interface";
-import { useDirectoryNavItem } from "../[dir]/service";
+import FolderNavItem from "./DirectoryItem";
 import FileItem from "./FileItem";
-import DirectoryItem from "./DirectoryItem";
 
-interface iDirectoryFilesProps {
-  dir: string;
+interface iFolderFilesProps {
   opened: boolean;
   files: iFileItem[];
 }
 
-function DirectoryFiles({ dir, opened, files }: iDirectoryFilesProps) {
+function FolderFiles({ opened, files }: iFolderFilesProps) {
   if (!opened) return null;
   return (
     <div className="pl-2 border border-gray-200">
@@ -19,9 +16,9 @@ function DirectoryFiles({ dir, opened, files }: iDirectoryFilesProps) {
           return (
             <div key={index}>
               {child.type == "directory" ? (
-                <DirectoryItem dir={dir} item={child}></DirectoryItem>
+                <FolderNavItem item={child}></FolderNavItem>
               ) : (
-                <FileItem dir={dir} item={child as iFileItem}></FileItem>
+                <FileItem item={child as iFileItem}></FileItem>
               )}
             </div>
           );
@@ -31,4 +28,4 @@ function DirectoryFiles({ dir, opened, files }: iDirectoryFilesProps) {
   );
 }
 
-export default DirectoryFiles;
+export default FolderFiles;

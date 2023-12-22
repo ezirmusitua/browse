@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: "standalone",
+  output: "export",
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    appDir: true,
-  },
+  experimental: {},
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
@@ -18,4 +17,6 @@ const nextConfig = {
   },
 };
 
+// const withPWA = require("next-pwa")({ dest: "public" });
+// module.exports = withPWA(nextConfig);
 module.exports = nextConfig;
